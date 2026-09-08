@@ -41,7 +41,7 @@ export const galleryItems: GalleryItem[] = [
   {
     id: 'Icon',
     title: 'Icon',
-    description: 'icon 名对应 assets/icons，默认尺寸与主题色',
+    description: 'icon 名对应内置图标，默认尺寸与主题色',
     Preview: IconPreview,
   },
   {

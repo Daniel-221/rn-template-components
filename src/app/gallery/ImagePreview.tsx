@@ -5,7 +5,9 @@ import { createThemedStyles, useThemedStyles } from '../../../theme/useTheme';
 import { Image } from '../../components/Image';
 import { PreviewSection } from './PreviewSection';
 
-const localSource = require('../../../assets/icon.png');
+const remoteSource = {
+  uri: 'https://reactnative.dev/img/tiny_logo.png',
+};
 
 const createStyles = createThemedStyles(t => ({
   root: {
@@ -44,16 +46,16 @@ export function ImagePreview() {
     <View style={styles.root}>
       <PreviewSection title="source">
         <View style={styles.row}>
-          <Image source={localSource} style={styles.size48} />
-          <Image source={localSource} style={styles.size96} />
+          <Image source={remoteSource} style={styles.size48} />
+          <Image source={remoteSource} style={styles.size96} />
         </View>
       </PreviewSection>
 
       <PreviewSection title="resizeMode">
         <View style={styles.row}>
-          <Image source={localSource} resizeMode="cover" style={styles.cover} />
+          <Image source={remoteSource} resizeMode="cover" style={styles.cover} />
           <Image
-            source={localSource}
+            source={remoteSource}
             resizeMode="contain"
             style={styles.contain}
           />

@@ -2,9 +2,8 @@ import LottieView from 'lottie-react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { useThemeTokens } from '../../theme/useTheme';
-
-const LIGHT = require('../../assets/lottie/loading2_light.json');
-const DARK = require('../../assets/lottie/loading2_dark.json');
+import DARK from './lottie/loading2_dark';
+import LIGHT from './lottie/loading2_light';
 
 export type LoadingProps = {
   size?: number;
