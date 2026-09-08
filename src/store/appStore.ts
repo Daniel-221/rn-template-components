@@ -1,5 +1,6 @@
 import { Appearance } from 'react-native';
-import { create } from 'zustand';
+
+import { createStore } from './createStore';
 
 type Theme = 'light' | 'dark' | 'system';
 type ResolvedTheme = 'light' | 'dark';
@@ -14,7 +15,7 @@ type AppState = {
 const resolveScheme = (scheme: unknown): ResolvedTheme =>
   scheme === 'dark' ? 'dark' : 'light';
 
-export const useAppStore = create<AppState>(set => ({
+export const useAppStore = createStore<AppState>(set => ({
   theme: 'light',
   systemTheme: resolveScheme(Appearance.getColorScheme()),
   toggleTheme: () =>

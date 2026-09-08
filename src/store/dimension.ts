@@ -1,5 +1,6 @@
 import { Dimensions } from 'react-native';
-import { create } from 'zustand';
+
+import { createStore } from './createStore';
 
 type States = {
   layout: { width: number; height: number };
@@ -11,7 +12,7 @@ type Actions = {
 
 const initialWindow = Dimensions.get('window');
 
-export const useDimensionStore = create<States & Actions>(set => ({
+export const useDimensionStore = createStore<States & Actions>(set => ({
   layout: {
     width: initialWindow.width,
     height: initialWindow.height,
