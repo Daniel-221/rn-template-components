@@ -1,4 +1,4 @@
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn } from './useMemoizedFn';
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 

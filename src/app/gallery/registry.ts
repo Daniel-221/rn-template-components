@@ -53,7 +53,7 @@ export const galleryItems: GalleryItem[] = [
   {
     id: 'Loading',
     title: 'Loading',
-    description: '主题对应的 Lottie loading',
+    description: '主题色系统转圈，Snack 预览不走 Lottie',
     Preview: LoadingPreview,
   },
   {

@@ -1,4 +1,4 @@
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn } from '../hooks/useMemoizedFn';
 import { useEffect, useRef } from 'react';
 import { Animated, Pressable } from 'react-native';
 

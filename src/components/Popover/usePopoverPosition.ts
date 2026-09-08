@@ -1,4 +1,4 @@
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn } from '../../hooks/useMemoizedFn';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { useWindowDimensions, type View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

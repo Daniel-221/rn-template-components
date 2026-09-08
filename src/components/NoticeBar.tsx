@@ -1,5 +1,5 @@
 import { Portal } from '@gorhom/portal';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn } from '../hooks/useMemoizedFn';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AppState, StyleSheet, View } from 'react-native';
 import Animated, {

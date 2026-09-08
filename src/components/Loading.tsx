@@ -1,9 +1,6 @@
-import LottieView from 'lottie-react-native';
-import type { StyleProp, ViewStyle } from 'react-native';
+import { ActivityIndicator, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useThemeTokens } from '../../theme/useTheme';
-import DARK from './lottie/loading2_dark';
-import LIGHT from './lottie/loading2_light';
 
 export type LoadingProps = {
   size?: number;
@@ -11,13 +8,11 @@ export type LoadingProps = {
 };
 
 export function Loading({ size = 20, style }: LoadingProps) {
-  const { isDark } = useThemeTokens();
+  const { tokens } = useThemeTokens();
 
   return (
-    <LottieView
-      autoPlay
-      loop
-      source={isDark ? DARK : LIGHT}
+    <ActivityIndicator
+      color={tokens.color.brand.primary}
       style={[{ width: size, height: size }, style]}
     />
   );
