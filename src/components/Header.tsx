@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { Pressable, View } from 'react-native';
 
 import { createThemedStyles, useThemedStyles } from '../../theme/useTheme';
@@ -44,20 +43,17 @@ const createStyles = createThemedStyles(t => ({
 }));
 
 export function Header({ title, onBack }: HeaderProps) {
-  const navigation = useNavigation();
   const styles = useThemedStyles(createStyles);
-  const goBack =
-    onBack ?? (navigation.canGoBack() ? () => navigation.goBack() : undefined);
 
   return (
     <View style={styles.root}>
       <View style={styles.side}>
-        {goBack ? (
+        {onBack ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="back"
             hitSlop={8}
-            onPress={goBack}
+            onPress={onBack}
             style={styles.back}
           >
             <Icon icon="chevron-left" size={24} />

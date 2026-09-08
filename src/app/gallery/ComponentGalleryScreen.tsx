@@ -1,4 +1,3 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,10 +7,11 @@ import { useThemeTokens } from '../../../theme/useTheme';
 import { Screen } from '../../components/Screen';
 import { Text } from '../../components/Text';
 import { useAppStore } from '../../store/appStore';
-import type { RootStackParamList } from '../RootNavigator';
 import { galleryItems } from './registry';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ComponentGallery'>;
+type Props = {
+  onOpen: (id: string) => void;
+};
 
 const createStyles = createThemedStyles(t => ({
   scroll: {
@@ -62,7 +62,7 @@ const createStyles = createThemedStyles(t => ({
   },
 }));
 
-export default function ComponentGalleryScreen({ navigation }: Props) {
+export default function ComponentGalleryScreen({ onOpen }: Props) {
   const insets = useSafeAreaInsets();
   const { tokens, isDark } = useThemeTokens();
   const styles = useThemedStyles(createStyles);
@@ -88,9 +88,7 @@ export default function ComponentGalleryScreen({ navigation }: Props) {
         {galleryItems.map(item => (
           <Pressable
             key={item.id}
-            onPress={() =>
-              navigation.navigate('ComponentPreview', { id: item.id })
-            }
+            onPress={() => onOpen(item.id)}
             style={styles.item}
           >
             <View style={styles.itemHeader}>

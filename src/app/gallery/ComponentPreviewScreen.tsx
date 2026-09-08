@@ -1,4 +1,3 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,10 +7,12 @@ import { useThemeTokens } from '../../../theme/useTheme';
 import { Screen } from '../../components/Screen';
 import { Text } from '../../components/Text';
 import { useAppStore } from '../../store/appStore';
-import type { RootStackParamList } from '../RootNavigator';
 import { getGalleryItem } from './registry';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ComponentPreview'>;
+type Props = {
+  id: string;
+  onBack: () => void;
+};
 
 const createStyles = createThemedStyles(t => ({
   missing: {
@@ -59,17 +60,17 @@ const createStyles = createThemedStyles(t => ({
   },
 }));
 
-export default function ComponentPreviewScreen({ route }: Props) {
+export default function ComponentPreviewScreen({ id, onBack }: Props) {
   const insets = useSafeAreaInsets();
   const { tokens, isDark } = useThemeTokens();
   const styles = useThemedStyles(createStyles);
-  const item = getGalleryItem(route.params.id);
-  const title = item?.title ?? route.params.id;
+  const item = getGalleryItem(id);
+  const title = item?.title ?? id;
 
   const toolbar = (
     <View style={styles.toolbar}>
       <Text style={styles.description}>
-        {item?.description ?? `未找到组件 ${route.params.id}`}
+        {item?.description ?? `未找到组件 ${id}`}
       </Text>
       <Pressable
         onPress={() => useAppStore.getState().toggleTheme()}
@@ -82,9 +83,9 @@ export default function ComponentPreviewScreen({ route }: Props) {
 
   if (!item) {
     return (
-      <Screen title={title}>
+      <Screen title={title} onBack={onBack}>
         <View style={styles.missing}>
-          <Text style={styles.missingText}>未找到组件 {route.params.id}</Text>
+          <Text style={styles.missingText}>未找到组件 {id}</Text>
         </View>
       </Screen>
     );
@@ -94,7 +95,7 @@ export default function ComponentPreviewScreen({ route }: Props) {
 
   if (item.layout === 'fill') {
     return (
-      <Screen title={title}>
+      <Screen title={title} onBack={onBack}>
         <View style={styles.fillHeader}>{toolbar}</View>
         <Preview />
       </Screen>
@@ -102,7 +103,7 @@ export default function ComponentPreviewScreen({ route }: Props) {
   }
 
   return (
-    <Screen title={title}>
+    <Screen title={title} onBack={onBack}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[
