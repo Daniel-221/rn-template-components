@@ -142,7 +142,7 @@ export function usePopoverPosition(
   }, [visible]);
 
   const onContentLayout = useMemoizedFn((next: ContentSize) => {
-    if (next.width <= 0 || next.height <= 0 || next.width >= width - 1) {
+    if (next.width <= 0 || next.height <= 0 ) {
       return;
     }
     const rounded = {

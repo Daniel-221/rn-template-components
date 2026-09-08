@@ -22,7 +22,8 @@ export function Icon({
   const source = iconRegistry[icon];
 
   if (!source) {
-    throw new Error(`unknown icon "${icon}"`);
+    console.warn(`unknown icon "${icon}"`);
+    return null;
   }
 
   return (

@@ -15,6 +15,8 @@ export type CheckBoxProps = {
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
   children?: ReactNode;
+  accessibilityLabel?: string;
+  testID?: string;
 };
 
 const BOX = 20;
@@ -57,6 +59,8 @@ export function CheckBox({
   onChange,
   disabled,
   children,
+  accessibilityLabel,
+  testID,
 }: CheckBoxProps) {
   const styles = useThemedStyles(createStyles);
   const { tokens } = useThemeTokens();
@@ -65,7 +69,9 @@ export function CheckBox({
   return (
     <Pressable
       accessibilityRole="checkbox"
-      accessibilityState={{ checked, disabled: !!disabled }}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ checked, disabled: !interactive }}
+      testID={testID}
       disabled={!interactive}
       hitSlop={8}
       onPress={() => onChange?.(!checked)}

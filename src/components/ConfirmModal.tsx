@@ -16,7 +16,7 @@ export type ConfirmModalProps = {
   cancelText?: string;
   confirmText?: string;
   onCancel?: () => void;
-  onConfirm?: () => void;
+  onConfirm: () => void;
 };
 
 const createStyles = createThemedStyles(t => ({
@@ -67,7 +67,7 @@ export function ConfirmModal({
     <SheetModal
       visible={visible}
       onClose={onClose}
-      header={<SheetHeader title={title} />}
+      header={<SheetHeader title={title} onClose={onClose} />}
     >
       <View style={styles.body}>
         {children ??

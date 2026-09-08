@@ -19,11 +19,20 @@ export function useSheetModalAnimation(visible: boolean, onClose: () => void) {
   const mountedRef = useRef(visible);
   const translateY = useSharedValue(screenHeight);
   const screenHeightSV = useSharedValue(screenHeight);
+  const startY = useSharedValue(0);
+  // UI 线程：退场后拦住已经开始的 pan。JS 的 .enabled(visible) 只拦新手势。
+  const open = useSharedValue(visible ? 1 : 0);
+  // JS：close() 只触发一次 onClose。
+  const closingRef = useRef(false);
 
   useEffect(() => {
     screenHeightSV.value = screenHeight;
   }, [screenHeight, screenHeightSV]);
   const close = useMemoizedFn(() => {
+    if (!visible || closingRef.current) {
+      return;
+    }
+    closingRef.current = true;
     onClose();
   });
 
@@ -34,12 +43,15 @@ export function useSheetModalAnimation(visible: boolean, onClose: () => void) {
 
   useEffect(() => {
     if (visible) {
+      closingRef.current = false;
+      open.value = 1;
       mountedRef.current = true;
       setMounted(true);
       translateY.value = screenHeightSV.value;
       translateY.value = withSpring(0, SPRING);
       return;
     }
+    open.value = 0;
     if (!mountedRef.current) {
       return;
     }
@@ -48,24 +60,36 @@ export function useSheetModalAnimation(visible: boolean, onClose: () => void) {
         runOnJS(unmount)();
       }
     });
-  }, [screenHeightSV, translateY, unmount, visible]);
+  }, [open, screenHeightSV, translateY, unmount, visible]);
 
   const pan = useMemo(
     () =>
       Gesture.Pan()
+        .enabled(visible)
+        .onStart(() => {
+          startY.value = translateY.value;
+        })
         .onUpdate(e => {
-          if (e.translationY > 0) {
-            translateY.value = e.translationY;
+          if (open.value === 0) {
+            return;
           }
+          const next = startY.value + e.translationY;
+          translateY.value = next < 0 ? 0 : next;
         })
         .onEnd(e => {
-          if (e.translationY > DISMISS_DISTANCE || e.velocityY > DISMISS_VELOCITY) {
+          if (open.value === 0) {
+            return;
+          }
+          if (
+            translateY.value > DISMISS_DISTANCE ||
+            e.velocityY > DISMISS_VELOCITY
+          ) {
             runOnJS(close)();
           } else {
             translateY.value = withSpring(0, SPRING);
           }
         }),
-    [close, translateY],
+    [close, open, startY, translateY, visible],
   );
 
   const sheetStyle = useAnimatedStyle(() => ({

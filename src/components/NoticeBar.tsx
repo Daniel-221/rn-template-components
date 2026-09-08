@@ -117,7 +117,7 @@ export function NoticeBarHost() {
   return (
     <Portal>
       <View
-        pointerEvents="box-none"
+        pointerEvents="none"
         style={[
           styles.overlay,
           { zIndex: overlayZ.noticeBar, elevation: overlayZ.noticeBar },

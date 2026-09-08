@@ -80,6 +80,8 @@ export function SheetModal({
   return (
     <Portal>
       <View
+        pointerEvents={visible ? 'auto' : 'none'}
+        accessibilityViewIsModal
         style={[
           styles.root,
           { zIndex: overlayZ.sheet, elevation: overlayZ.sheet },
@@ -88,6 +90,7 @@ export function SheetModal({
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="close"
+          disabled={!visible}
           onPress={close}
           style={styles.fill}
         >

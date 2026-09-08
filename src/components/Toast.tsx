@@ -1,9 +1,15 @@
 import { Portal } from '@gorhom/portal';
 import { useMemoizedFn } from '../hooks/useMemoizedFn';
 import { useEffect, useRef, useState } from 'react';
-import { AppState, StyleSheet, View } from 'react-native';
+import {
+  AccessibilityInfo,
+  AppState,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Animated, {
   Easing,
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -16,6 +22,15 @@ import { Text } from './Text';
 
 const DEFAULT_DURATION = 2000;
 const FADE_MS = 150;
+const SCALE_HIDDEN = 0.2;
+const FADE_IN = {
+  duration: FADE_MS,
+  easing: Easing.out(Easing.cubic),
+} as const;
+const FADE_OUT = {
+  duration: FADE_MS,
+  easing: Easing.in(Easing.cubic),
+} as const;
 
 type Host = {
   show: (message: string, duration?: number) => void;
@@ -53,21 +68,46 @@ const createStyles = createThemedStyles(t => ({
   },
 }));
 
-function ToastCard({ message }: { message: string }) {
+function ToastCard({
+  message,
+  visible,
+  onExited,
+}: {
+  message: string;
+  visible: boolean;
+  onExited: () => void;
+}) {
   const styles = useThemedStyles(createStyles);
   const opacity = useSharedValue(0);
+  const scale = useSharedValue(SCALE_HIDDEN);
 
   useEffect(() => {
-    opacity.value = withTiming(1, {
-      duration: FADE_MS,
-      easing: Easing.out(Easing.cubic),
+    if (visible) {
+      opacity.value = withTiming(1, FADE_IN);
+      scale.value = withTiming(1, FADE_IN);
+      return;
+    }
+    opacity.value = withTiming(0, FADE_OUT, finished => {
+      if (finished) {
+        runOnJS(onExited)();
+      }
     });
-  }, [opacity]);
+    scale.value = withTiming(SCALE_HIDDEN, FADE_OUT);
+  }, [onExited, opacity, scale, visible]);
 
-  const fade = useAnimatedStyle(() => ({ opacity: opacity.value }));
+  const fade = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
+  }));
 
   return (
-    <Animated.View style={[styles.card, fade]}>
+    <Animated.View
+      accessible
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      accessibilityLabel={message}
+      style={[styles.card, fade]}
+    >
       <Text style={styles.text}>{message}</Text>
     </Animated.View>
   );
@@ -76,14 +116,30 @@ function ToastCard({ message }: { message: string }) {
 export function ToastHost() {
   const styles = useThemedStyles(createStyles);
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [message, setMessage] = useState('');
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(false);
+  const visibleRef = useRef(false);
+
+  const unmount = useMemoizedFn(() => {
+    if (visibleRef.current) {
+      return;
+    }
+    mountedRef.current = false;
+    visibleRef.current = false;
+    setMounted(false);
+  });
 
   const hide = useMemoizedFn(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
+    if (!mountedRef.current || !visibleRef.current) {
+      return;
+    }
+    visibleRef.current = false;
     setVisible(false);
   });
 
@@ -96,7 +152,11 @@ export function ToastHost() {
       timerRef.current = null;
     }
     setMessage(next);
+    mountedRef.current = true;
+    visibleRef.current = true;
+    setMounted(true);
     setVisible(true);
+    AccessibilityInfo.announceForAccessibility(next);
     if (duration > 0) {
       timerRef.current = setTimeout(hide, duration);
     }
@@ -121,7 +181,7 @@ export function ToastHost() {
     return () => sub.remove();
   }, [hide]);
 
-  if (!visible) {
+  if (!mounted) {
     return null;
   }
 
@@ -129,12 +189,18 @@ export function ToastHost() {
     <Portal>
       <View
         pointerEvents="none"
+        importantForAccessibility="no"
         style={[
           styles.overlay,
           { zIndex: overlayZ.toast, elevation: overlayZ.toast },
         ]}
       >
-        <ToastCard key={message} message={message} />
+        <ToastCard
+          key={message}
+          message={message}
+          visible={visible}
+          onExited={unmount}
+        />
       </View>
     </Portal>
   );

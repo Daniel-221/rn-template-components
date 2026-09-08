@@ -9,6 +9,8 @@ export type CapsuleSwitchProps = {
   value: boolean;
   onChange?: (value: boolean) => void;
   disabled?: boolean;
+  accessibilityLabel?: string;
+  testID?: string;
 };
 
 const TRACK_W = 40;
@@ -53,6 +55,8 @@ export function CapsuleSwitch({
   value,
   onChange,
   disabled,
+  accessibilityLabel,
+  testID,
 }: CapsuleSwitchProps) {
   const styles = useThemedStyles(createStyles);
   const travel = TRACK_W - (TRACK_H - PAD * 2) - PAD * 2;
@@ -74,7 +78,9 @@ export function CapsuleSwitch({
   return (
     <Pressable
       accessibilityRole="switch"
-      accessibilityState={{ checked: value, disabled: !!disabled }}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ checked: value, disabled: !interactive }}
+      testID={testID}
       disabled={!interactive}
       onPress={onPress}
       style={({ pressed }) => [

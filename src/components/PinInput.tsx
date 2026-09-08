@@ -23,12 +23,24 @@ export type PinInputProps = {
   onChangeText: (value: string) => void;
   length?: number;
   autoFocus?: boolean;
+  contextMenuHidden?: boolean;
+  accessibilityLabel?: string;
 };
 
 const DEFAULT_LENGTH = 4;
 
 export const PinInput = forwardRef<PinInputRef, PinInputProps>(
-  ({ value, onChangeText, length = DEFAULT_LENGTH, autoFocus }, ref) => {
+  (
+    {
+      value,
+      onChangeText,
+      length = DEFAULT_LENGTH,
+      autoFocus,
+      contextMenuHidden = false,
+      accessibilityLabel = '验证码',
+    },
+    ref,
+  ) => {
     const styles = useThemedStyles(createStyles);
     const inputRef = useRef<TextInput>(null);
     const [focused, setFocused] = useState(false);
@@ -64,7 +76,13 @@ export const PinInput = forwardRef<PinInputRef, PinInputProps>(
 
     return (
       <View style={styles.wrap}>
-        <View pointerEvents="none" style={styles.row}>
+        <View
+          pointerEvents="none"
+          accessible={false}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+          style={styles.row}
+        >
           {digits.map((char, index) => {
             const isActive = focused && index === activeIndex;
             const display = char || (isActive && cursorVisible ? '|' : '');
@@ -87,10 +105,14 @@ export const PinInput = forwardRef<PinInputRef, PinInputProps>(
           maxLength={length}
           keyboardType="number-pad"
           autoFocus={autoFocus}
-          contextMenuHidden
+          contextMenuHidden={contextMenuHidden}
+          textContentType="oneTimeCode"
+          autoComplete="one-time-code"
           autoCorrect={false}
+          accessibilityLabel={accessibilityLabel}
           allowFontScaling={false}
           caretHidden
+          selectionColor="transparent"
           underlineColorAndroid="transparent"
           style={styles.input}
         />
@@ -131,7 +153,6 @@ const createStyles = createThemedStyles(t => ({
   },
   input: {
     ...StyleSheet.absoluteFillObject,
-    opacity: 0,
     color: 'transparent',
   },
 }));
